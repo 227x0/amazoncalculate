@@ -284,6 +284,10 @@
         }
       }
       state.settings[key] = v;
+      /* a manual PVH edit opts out of the auto-quarter derivation; the compute
+       * button re-enables it. Flip the flag BEFORE persist/render so renderAll()
+       * does not overwrite the value the user just typed. */
+      if (key === "phvRate") state.settings.phvAuto = false;
       recordRateChange();
       persistAll();
       buildSettingsForm(); /* keep the advanced form in sync */
@@ -329,9 +333,6 @@
 
   bindRateInput(rateBaseInput, "baseRate");
   bindRateInput(ratePhvInput, "phvRate");
-  /* a manual PVH edit opts out of the auto-quarter derivation; the compute
-   * button re-enables it */
-  ratePhvInput.addEventListener("change", function () { state.settings.phvAuto = false; });
   document.getElementById("btnPhvCalc").addEventListener("click", function () {
     const res = computePrevQuarterPhv();
     if (!res) { showMsg(I18n.t("phvCalcNoData")); return; }
@@ -478,6 +479,7 @@
             }
           }
           state.settings[f.key] = newVal;
+          if (f.key === "phvRate") state.settings.phvAuto = false;
           recordRateChange();
           persistAll();
           renderAll();
