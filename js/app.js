@@ -27,6 +27,9 @@
       if (!raw) return { ...Payroll.DEFAULT_SETTINGS };
       const parsed = JSON.parse(raw);
       const out = { ...Payroll.DEFAULT_SETTINGS };
+      /* Defensive: older cached payroll.js may not include phvAuto in DEFAULT_SETTINGS,
+         so ensure a boolean default here in app.js too. */
+      if (typeof out.phvAuto !== "boolean") out.phvAuto = true;
       if (parsed && typeof parsed === "object") {
         /* validate like the server's sanitizeSettings: only known numeric fields,
          * finite and non-negative — a corrupt localStorage must not produce
