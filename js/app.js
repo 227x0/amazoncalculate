@@ -36,6 +36,7 @@
           if (typeof v === "number" && isFinite(v) && v >= 0) out[f.key] = v;
         });
         if (typeof parsed.bonusVoid === "boolean") out.bonusVoid = parsed.bonusVoid;
+        if (typeof parsed.phvAuto === "boolean") out.phvAuto = parsed.phvAuto;
       }
       return out;
     } catch (e) { return { ...Payroll.DEFAULT_SETTINGS }; }

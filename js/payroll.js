@@ -44,7 +44,10 @@
     bonusMonthKc: 0,
     /* warning letter / ADAPT in this month — voids the whole attendance bonus
      * (agency slide: výtka nebo písemné upozornění ADAPT ruší měsíční prémii) */
-    bonusVoid: false
+    bonusVoid: false,
+    /* true = PVH is derived from the previous quarter automatically;
+     * false = the user has manually overridden the PVH rate */
+    phvAuto: true
   };
 
   /**
