@@ -794,7 +794,9 @@
     state.prevBonus = prevMonthBonusKc();
     state.bonusKc = state.settings.bonusVoid ? 0
       : (state.settings.bonusMonthKc > 0 ? state.settings.bonusMonthKc : state.prevBonus.amount);
-    const results = Payroll.withMonthlyBonus(resultsRaw, state.bonusKc);
+    const results = state.settings.bonusVoid
+      ? Payroll.withAttendanceBonus(resultsRaw, state.shifts, Object.assign({}, state.settings, { bonusVoid: true }), state.fondDays)
+      : Payroll.withMonthlyBonus(resultsRaw, state.bonusKc);
 
     window.CalendarView.render(calendarWrap, {
       year: state.year, month: state.month,
@@ -844,8 +846,11 @@
          * re-derive the bonus layer from raw results (never double-apply) */
         resultsRaw[idx] = Payroll.calcDay(new Date(state.year, state.month, idx + 1), b.type, state.shifts[idx], state.settings, holidayMap);
         /* painting the CURRENT month never changes THIS month's bonus — it was
-         * earned last month; only the same fixed amount gets redistributed */
-        const painted = Payroll.withMonthlyBonus(resultsRaw, state.bonusKc || 0);
+         * earned last month; only the same fixed amount gets redistributed.
+         * Warning/ADAPT void must actively zero the per-day P, not leave it. */
+        const painted = state.settings.bonusVoid
+          ? Payroll.withAttendanceBonus(resultsRaw, state.shifts, Object.assign({}, state.settings, { bonusVoid: true }), state.fondDays)
+          : Payroll.withMonthlyBonus(resultsRaw, state.bonusKc || 0);
         window.CalendarView.refreshCell(calendarWrap, { year: state.year, month: state.month, shifts: state.shifts, results: painted, brush: b }, idx);
         renderSummary(painted);
         renderBreakdown(painted);
